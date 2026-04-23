@@ -18,6 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dumply.config.tenant.TenantContext;
 
 import java.time.LocalDateTime;
@@ -31,6 +34,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final GoogleAuthenticator gAuth = new GoogleAuthenticator();
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final EmailService emailService;
     private final TokenBlacklistService blacklistService;
 
@@ -138,6 +142,56 @@ public class AuthService {
             long expiration = decodedJWT.getExpiresAt().getTime() - System.currentTimeMillis();
             blacklistService.blacklistToken(token, expiration);
         }
+    }
+
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        logger.info("Solicitação de recuperação de senha para o e-mail: {}", request.email());
+
+        // Não enviamos e-mail para evitar enumeração de e-mails
+        userRepository.findByEmail(request.email()).ifPresent(user -> {
+            String token = UUID.randomUUID().toString();
+            user.setPasswordResetToken(token);
+            user.setPasswordResetExpiresAt(LocalDateTime.now().plusHours(1)); //Expira em 1 hora
+            userRepository.save(user);
+
+            emailService.sendPasswordResetEmail(user.getEmail(), token);
+        });
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByPasswordResetToken(request.token())
+                .orElseThrow(()-> {
+                    logger.error("Falha no reset de senha: Token inválido");
+                    return new BusinessException("Token de recuperação inválido.");
+                });
+
+        if (user.getPasswordResetExpiresAt().isBefore(LocalDateTime.now())) {
+            logger.error("Falha no reset de senha: Token expirado para o usuário: {}", user.getEmail());
+            throw new BusinessException("Token de recuperação expirado.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+
+        user.setPasswordResetToken(null);
+        user.setPasswordResetExpiresAt(null);
+        userRepository.save(user);
+        logger.info("Senha do usuário {} resetada com sucesso.", user.getEmail());
+    }
+
+    @Transactional
+    public void changePassword(ChangePasswordRequest request) {
+        User user = getAuthenticatedUser();
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            logger.error("Falha ao alterar senha: Senha antiga incorreta para o usuário {}", user.getEmail());
+            throw new BusinessException("A senha atual informada está incorreta.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+        logger.info("Senha alterada com sucesso para o usuário {}", user.getEmail());
     }
 
     @Transactional

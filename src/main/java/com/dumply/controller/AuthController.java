@@ -44,11 +44,30 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(body));
     }
 
-    @PostMapping
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         authService.logout();
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest request) {
+        authService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
+
 
     @PostMapping("/2fa/verify")
     public ResponseEntity<ResponseDTO> verify2FA(@RequestParam String email, @RequestParam String code) {

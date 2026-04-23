@@ -46,6 +46,10 @@ public class User {
 
     private LocalDateTime locktime;
 
+    private String passwordResetToken;
+
+    private LocalDateTime passwordResetExpiresAt;
+
     private boolean accountNonLocked = true;
 
     private String disable2faCode;

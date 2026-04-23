@@ -45,11 +45,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/2fa/verify").permitAll()
                         .requestMatchers(HttpMethod.POST, "/companies/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/reset-password").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
@@ -61,6 +65,7 @@ public class SecurityConfig {
                 .addFilterBefore(tenantHibernateFilter,
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(securityFilter, TenantHibernateFilter.class);
+
 
         return http.build();
     }
