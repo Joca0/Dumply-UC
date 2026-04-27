@@ -308,7 +308,7 @@ Contribuições são bem-vindas! Para contribuir:
 
 ## 📜 Licença
 
-Este projeto foi desenvolvido para fins **acadêmicos**, como parte da disciplina de Segurança da Informação da **Universidade Cruzeiro do Sul**.
+Este projeto foi desenvolvido para fins **acadêmicos**, como parte da disciplina de Segurança da Informação da **Universidade de Mogi das Cruzes**.
 
 ---
 
