@@ -4,7 +4,7 @@
 
 ### Sistema de Autenticação Segura com Spring Boot
 
-*Projeto acadêmico desenvolvido para a disciplina de Segurança da Informação — Universidade Cruzeiro do Sul*
+*Projeto acadêmico desenvolvido para a disciplina de Segurança da Informação — Universidade de Mogi das Cruzes UMC*
 
 ---
 
