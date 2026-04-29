@@ -3,6 +3,7 @@ package com.dumply.config.security;
 import com.dumply.config.tenant.TenantHibernateFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,12 +39,21 @@ public class SecurityConfig {
     @Autowired
     private SecurityFilter securityFilter;
 
+    @Value("${security.require-ssl:false}")
+    private boolean requireSsl;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults());
+
+        if (requireSsl) {
+            http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+        }
+
+        http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(authorize -> authorize
@@ -86,6 +96,7 @@ public class SecurityConfig {
 
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:5173",
+                "https://localhost:5173",
                 "http://127.0.0.1:3000",
                 "http://164.152.252.146"
         ));
