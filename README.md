@@ -318,8 +318,10 @@ Este projeto foi desenvolvido para fins **acadêmicos**, como parte da disciplin
 <div align="center">
 
 **Joca0**
+**ericomarin**
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Joca0)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ericomarin)
 [![Repositório](https://img.shields.io/badge/Dumply--UC-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Joca0/Dumply-UC)
 
 ---
